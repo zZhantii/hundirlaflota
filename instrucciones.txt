@@ -1,0 +1,5 @@
+Para Compilar un archivo C se debe de utilizar este comando
+    gcc practica2.c -o practica2 -pedantic -std=c99 
+
+Para ejecutar el archivo compilado se utiliza
+    ./file

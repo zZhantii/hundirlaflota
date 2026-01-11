@@ -206,24 +206,65 @@ int elegir_flota()
     return enteroUser("Introdueix el número de la flota (1-3): ", 1, 3);
 }
 
+int barcoHundido(int id_barco, int tablero[10][10], int tablero_conBarcos[10][10])
+{
+    for (int i = 0; i < 10; i++)
+    {
+        for (int j = 0; j < 10; j++)
+        {
+            if (tablero_conBarcos[i][j] == id_barco && tablero[i][j] != 1)
+            {
+                // Barco aun vivo
+                return 0;
+            }
+        }
+    }
+    // barco ya hundido
+    return 1;
+}
+
 int disparoBarco(int fila, int columna, int tablero[10][10], int tablero_conBarcos[10][10]) {
     if (tablero[fila][columna] != 0) {
         printf("Ja has disparat aqui\n");
         return 0;
     }
 
-    // Hay barco, si id > 0
-    if (tablero_conBarcos[fila][columna] > 0) {
+    int id_barco = tablero_conBarcos[fila][columna];
+
+        // Hay barco, si id > 0
+    if (id_barco > 0)
+    {
         printf("TOCAT!\n");
         tablero[fila][columna] = 1;
 
-        int id_barco = tablero_conbarcos[fila][columna;]
-        return id_barco;
-    } else {
+        if (barcoHundido(id_barco, tablero, tablero_conBarcos)) {
+            printf("VAIXELL ENFONSAT\n");
+        }
+
+        return 1;
+    }
+    else
+    {
         printf("Aigua\n");
         tablero[fila][columna] = 2;
         return 0;
     }
+}
+
+int barcos_restantes(int tablero[10][10], int tablero_conBarcos[10][10]) {
+    for (int i = 0; i < 10; i++)
+    {
+        for (int j = 0; j < 10; j++)
+        {
+            if (tablero_conBarcos[i][j] > 0 && tablero[i][j] != 1) {
+                // Quedan barcos restantes
+                return 1; 
+            }
+        }
+        
+    }
+    // No quedan barcos
+    return 0;
 }
 
 // Funcion para comenzar la partida
@@ -232,6 +273,7 @@ void comenzarPartida(int tablero_conBarcos[10][10]) {
 
     int tablero[10][10] = {0};
     int fila, columna;
+    int contador = 0;
 
     while (1) {
         printar_tablero(tablero);
@@ -240,27 +282,19 @@ void comenzarPartida(int tablero_conBarcos[10][10]) {
 
         disparoBarco(fila, columna, tablero, tablero_conBarcos);
 
-        
-
-        continue;
-    }
-
-
-}
-
-int barcoHundido(int id_barco, int tablero[10][10], int tablero_conBarcos[10][10]) {
-    for (int i = 0; i < 10; i++)
-    {
-        for (int j = 0; j < 10; j++)
+        if (!barcos_restantes(tablero, tablero_conBarcos))
         {
-            if (tablero_conBarcos[i][j] == id_barco && tablero[i][j] != 1) {
-
-            }
+            printar_tablero(tablero);
+            printf("Felicitats! Has enfonsat tota la flota en %d tirades!", contador);
+            break;
         }
+
+        contador++;
     }
 }
 
-int main(void)
+    int
+    main(void)
 {
     srand(time(NULL));
     int tablero_conBarcos[10][10] = {0};

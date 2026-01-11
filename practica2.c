@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+// Estructura del barco para almacenar su informacion
 struct barco
 {
     char nombre[20];
@@ -9,6 +10,7 @@ struct barco
     int casillas;
 };
 
+// Funcion para printar el tablero 
 void printar_tablero(int tablero[10][10])
 {
     printf("   | A B C D E F G H I J\n --+---------------------\n");
@@ -24,6 +26,7 @@ void printar_tablero(int tablero[10][10])
     }
 }
 
+// Funcion para printar el tablero con los barcos ya colocados de forma random
 void tablero_barcos(int tablero_conBarcos[10][10], struct barco flota[], int num_barcos)
 {
     for (int i = 0; i < num_barcos; i++)
@@ -112,11 +115,47 @@ void tablero_barcos(int tablero_conBarcos[10][10], struct barco flota[], int num
     }
 }
 
-void entradaUser(const char *mensaje, chat *User) {
-    printf("%s", mensaje);
+// Funcion para pedir numeros enteros al usuario
+int enteroUser(const char *mensaje, int min, int max) {
+    int valor;
+    int entradaUser;
 
-    
+    do {
+        printf("%s", mensaje);
+        entradaUser = scanf("%d", &valor);
+
+        // Limpiar buffer
+        while (getchar() != '\n');
+
+        if (entradaUser == 1 && valor >= min && valor <= max)
+        {
+            return valor;
+        }
+
+        printf("Número no valido\n");
+    } while (1);
 }
+
+// Funcion para pedir texto al usuario (SOLAMENTE PARA LETRAS, PALABRAS Y COORDENADAS)
+void charUser(const char *mensaje, char *texto, int tam) {
+    printf("%s", mensaje);
+    scanf("%19s", texto);
+    while (getchar() != '\n');
+}
+
+// Funcion para controlar las decisiones de SI o NO del usuario
+char snUser(const char *mensaje) {
+    char c;
+
+    do {
+        printf("%s", mensaje);
+        scanf(" %c", &c);
+        // Limpiar buffer
+        if (c == 'S' || c == 's')
+    }
+}
+
+
 
 int main(void)
 {
@@ -149,64 +188,5 @@ int main(void)
     int num_flota2 = sizeof(flota2) / sizeof(flota2[0]);
     int num_flota3 = sizeof(flota3) / sizeof(flota3[0]);
 
-    // Tablero sin barcos
-    // printar_tablero(tablero);
-
-    // Tablero con barcos
-    // tablero_barcos(tablero_conBarcos, flota1, num_flota1); //Se muestra correctamente
-
-    int hecho = 0;  
-
-    do{
-        printf("┌──────────────────────────────────┐\n");
-        printf("│        Escull una flota          │\n");
-        printf("├──────────────────────────────────┤\n");
-        printf("│ 1 - L'Armada Vencible            │\n");
-        printf("│ 2 - Els Brivalls                 │\n");
-        printf("│ 3 - La Flotilla                  │\n");
-        printf("└──────────────────────────────────┘\n");
-        printf("Introdueix el número de la flota (1-3): ");
-
-        int opcionCorrecta = 0;
-        int intValue;
-        while (!opcionCorrecta)
-        {
-            scanf("%d", &intValue);
-            if (intValue >= 1 && intValue <= 3)
-            {
-                switch (intValue)
-                {
-                case 1:
-                    printar_tablero(tablero);
-                    tablero_barcos(tablero_conBarcos, flota1, num_flota1);
-                    break;
-
-                case 2:
-                    printar_tablero(tablero);
-                    tablero_barcos(tablero_conBarcos, flota2, num_flota2);
-                    break;
-
-                case 3:
-                    printar_tablero(tablero);
-                    tablero_barcos(tablero_conBarcos, flota3, num_flota3);
-                    break;
-
-                default:
-                    break;
-                }
-                opcionCorrecta = 1;
-            }
-            else
-            {
-                printf("Escull la opció 1, 2 o 3: ");
-                while (getchar() != '\n')
-                    ;
-            }
-        }
-
-    } while (hecho == 0);
-    {
-         while (getchar() != '\n')
-                    ;
-    }
+ 
 }

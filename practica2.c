@@ -53,7 +53,6 @@ void printar_tablero(int tablero[10][10])
     }
 }
 
-
 // Funcion para printar el tablero con los barcos ya colocados de forma random
 void tablero_barcos(int tablero_conBarcos[10][10], struct barco flota[], int num_barcos)
 {
@@ -115,44 +114,6 @@ void tablero_barcos(int tablero_conBarcos[10][10], struct barco flota[], int num
                         }
                     }
                 }
-
-                // if (orientacion == 0)
-                // {
-                //     // Comprovar si cabe el barco en el tablero
-                //     if (columna + flota[i].casillas > 10)
-                //     {
-                //         valido = 0;
-                //     }
-                //     else
-                //     {
-                //         for (int k = 0; k < flota[i].casillas; k++)
-                //         {
-                //             if (tablero_conBarcos[fila][columna + k] != 0)
-                //             {
-                //                 valido = 0;
-                //                 break;
-                //             }
-                //         }
-                //     }
-                // }
-                // else
-                // {
-                //     if (fila + flota[i].casillas > 10)
-                //     {
-                //         valido = 0;
-                //     }
-                //     else
-                //     {
-                //         for (int k = 0; k < flota[i].casillas; k++)
-                //         {
-                //             if (tablero_conBarcos[fila + k][columna] != 0)
-                //             {
-                //                 valido = 0;
-                //                 break;
-                //             }
-                //         }
-                //     }
-                // }
 
                 if (valido)
                 {
@@ -224,7 +185,7 @@ void coordenadasUser(int *fila, int *columna) {
 
         letra = toupper(coordenadas[0]);
 
-        if (letra < 'A' || letra > 'j') {
+        if (letra < 'A' || letra > 'J') {
             printf("Columna incorrecta (A-J)\n");
             continue;
         }
@@ -445,6 +406,19 @@ void prepararPartida(int tablero_conBarcos[10][10], struct barco flota[], int nu
 
                 break;
 
+        case 2:
+            printf("Preparant tauler de la flota 2... \n");
+
+            prepararPartida(tablero_conBarcos, flota2, num_flota2);
+
+            break;
+
+        case 3:
+            printf("Preparant tauler de la flota 3... \n");
+
+            prepararPartida(tablero_conBarcos, flota3, num_flota3);
+
+            break;
         default:
             break;
         }

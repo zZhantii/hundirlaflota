@@ -11,6 +11,32 @@ struct barco
     int casillas;
 };
 
+// Flotas
+struct barco flota1[] = {
+    {"portaavions", 1, 5},
+    {"cuirassat", 1, 4},
+    {"destructors", 2, 3},
+    {"fragates", 2, 2},
+    {"submarins", 3, 1}};
+
+struct barco flota2[] =
+    {
+        {"cuirassat", 1, 4},
+        {"destructors", 2, 3},
+        {"fragates", 3, 2},
+        {"submarins", 4, 1}};
+
+struct barco flota3[] =
+    {
+        {"destructors", 2, 3},
+        {"fragates", 3, 2},
+        {"submarins", 4, 1}};
+
+// Variable globales del tamaño de las flotas
+int num_flota1 = sizeof(flota1) / sizeof(flota1[0]);
+int num_flota2 = sizeof(flota2) / sizeof(flota2[0]);
+int num_flota3 = sizeof(flota3) / sizeof(flota3[0]);
+
 // Funcion para printar el tablero 
 void printar_tablero(int tablero[10][10])
 {
@@ -26,6 +52,7 @@ void printar_tablero(int tablero[10][10])
         printf("\n");
     }
 }
+
 
 // Funcion para printar el tablero con los barcos ya colocados de forma random
 void tablero_barcos(int tablero_conBarcos[10][10], struct barco flota[], int num_barcos)
@@ -46,36 +73,41 @@ void tablero_barcos(int tablero_conBarcos[10][10], struct barco flota[], int num
                 int orientacion = rand() % 2; // 0 = horizontal, 1 = vertical
                 int valido = 1;
 
+                int fila_ini, fila_fin, col_ini, col_fin;
+
                 if (orientacion == 0)
-                {
-                    // Comprovar si cabe el barco en el tablero
+                { // horizontal
                     if (columna + flota[i].casillas > 10)
-                    {
-                        valido = 0;
-                    }
-                    else
-                    {
-                        for (int k = 0; k < flota[i].casillas; k++)
                         {
-                            if (tablero_conBarcos[fila][columna + k] != 0)
-                            {
-                                valido = 0;
-                                break;
-                            }
+                            valido = 0;
                         }
-                    }
+
+                    fila_ini = fila - 1;
+                    fila_fin = fila + 1;
+                    col_ini = columna - 1;
+                    col_fin = columna + flota[i].casillas;
                 }
                 else
-                {
+                { // vertical
+
                     if (fila + flota[i].casillas > 10)
-                    {
-                        valido = 0;
-                    }
-                    else
-                    {
-                        for (int k = 0; k < flota[i].casillas; k++)
                         {
-                            if (tablero_conBarcos[fila + k][columna] != 0)
+                            valido = 0;
+                        }
+
+                    fila_ini = fila - 1;
+                    fila_fin = fila + flota[i].casillas;
+                    col_ini = columna - 1;
+                    col_fin = columna + 1;
+                }
+
+                for (int r = fila_ini; r <= fila_fin && valido; r++)
+                {
+                    for (int c = col_ini; c <= col_fin; c++)
+                    {
+                        if (r >= 0 && r < 10 && c >= 0 && c < 10)
+                        {
+                            if (tablero_conBarcos[r][c] != 0)
                             {
                                 valido = 0;
                                 break;
@@ -83,6 +115,44 @@ void tablero_barcos(int tablero_conBarcos[10][10], struct barco flota[], int num
                         }
                     }
                 }
+
+                // if (orientacion == 0)
+                // {
+                //     // Comprovar si cabe el barco en el tablero
+                //     if (columna + flota[i].casillas > 10)
+                //     {
+                //         valido = 0;
+                //     }
+                //     else
+                //     {
+                //         for (int k = 0; k < flota[i].casillas; k++)
+                //         {
+                //             if (tablero_conBarcos[fila][columna + k] != 0)
+                //             {
+                //                 valido = 0;
+                //                 break;
+                //             }
+                //         }
+                //     }
+                // }
+                // else
+                // {
+                //     if (fila + flota[i].casillas > 10)
+                //     {
+                //         valido = 0;
+                //     }
+                //     else
+                //     {
+                //         for (int k = 0; k < flota[i].casillas; k++)
+                //         {
+                //             if (tablero_conBarcos[fila + k][columna] != 0)
+                //             {
+                //                 valido = 0;
+                //                 break;
+                //             }
+                //         }
+                //     }
+                // }
 
                 if (valido)
                 {
@@ -223,6 +293,30 @@ int barcoHundido(int id_barco, int tablero[10][10], int tablero_conBarcos[10][10
     return 1;
 }
 
+int marcarAgua(int id_barco, int tablero[10][10], int tablero_conBarcos[10][10]) {
+    for (int i = 0; i < 10; i++)
+    {
+        for (int j = 0; j < 10; j++)
+        {
+            // Comprovacion de las casillas del barco hundido
+            if (tablero_conBarcos[i][j] == id_barco) {
+                // doble for para recorrer el perimetro del barco
+                for (int x = i - 1; x <= i + 1; x++)
+                {
+                    for (int z = j - 1; z <= j + 1; z++)
+                    {
+                        if (x >= 0 && x < 10 && z >= 0 && z < 10) {
+                            if (tablero[x][z] == 0 && tablero_conBarcos[x][z] == 0) {
+                                tablero[x][z] = 2;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 int disparoBarco(int fila, int columna, int tablero[10][10], int tablero_conBarcos[10][10]) {
     if (tablero[fila][columna] != 0) {
         printf("Ja has disparat aqui\n");
@@ -239,6 +333,7 @@ int disparoBarco(int fila, int columna, int tablero[10][10], int tablero_conBarc
 
         if (barcoHundido(id_barco, tablero, tablero_conBarcos)) {
             printf("VAIXELL ENFONSAT\n");
+            marcarAgua(id_barco, tablero, tablero_conBarcos);
         }
 
         return 1;
@@ -271,7 +366,17 @@ int barcos_restantes(int tablero[10][10], int tablero_conBarcos[10][10]) {
 void comenzarPartida(int tablero_conBarcos[10][10]) {
     printf("Comença la partida...\n");
 
+    // Doble for para limpiar la tabla
     int tablero[10][10] = {0};
+
+    // for (int i = 0; i < 10; i++)
+    // {
+    //     for (int j = 0; j < 10; j++)
+    //     {
+    //         tablero[i][j] = 0;
+    //     }
+    // }
+
     int fila, columna;
     int contador = 0;
 
@@ -286,66 +391,68 @@ void comenzarPartida(int tablero_conBarcos[10][10]) {
         {
             printar_tablero(tablero);
             printf("Felicitats! Has enfonsat tota la flota en %d tirades!", contador);
-            break;
+            return;
         }
-
         contador++;
     }
+}
+
+void prepararPartida(int tablero_conBarcos[10][10], struct barco flota[], int num_flota)
+{
+
+    char repetir;
+
+    do {
+        // Doble for para limpiar la tabla de barcos
+        for (int x = 0; x < 10; x++)
+        {
+            for (int y = 0; y < 10; y++)
+            {
+                tablero_conBarcos[x][y] = 0;
+            }
+        }
+
+        // tablero_barcos(tablero_barcos, flota, num_flota);
+
+        if (snUser("Tauler generat. Vols fer trampes i veure el tauler generat? (S/N): ") == 'S') {
+            tablero_barcos(tablero_conBarcos, flota, num_flota);
+        }
+
+        repetir = snUser("Vols generar un nou tauler? (S/N): ");
+
+    } while(repetir == 'S');
 }
 
     int
     main(void)
 {
     srand(time(NULL));
-    int tablero_conBarcos[10][10] = {0};
 
-    struct barco flota1[] = {
-        {"portaavions", 1, 5},
-        {"cuirassat", 1, 4},
-        {"destructors", 2, 3},
-        {"fragates", 2, 2},
-        {"submarins", 3, 1}};
+    char jugar;
 
-    struct barco flota2[] =
-        {
-            {"cuirassat", 1, 4},
-            {"destructors", 2, 3},
-            {"fragates", 3, 2},
-            {"submarins", 4, 1}};
-
-    struct barco flota3[] =
-        {
-            {"destructors", 2, 3},
-            {"fragates", 3, 2},
-            {"submarins", 4, 1}};
-
-    int num_flota1 = sizeof(flota1) / sizeof(flota1[0]);
-    int num_flota2 = sizeof(flota2) / sizeof(flota2[0]);
-    int num_flota3 = sizeof(flota3) / sizeof(flota3[0]);
-
-    int flota = elegir_flota();
-
-    switch (flota)
+        do
     {
-    case 1:
-        printf("Preparant tauler de la flota 1... \n");
+        int tablero_conBarcos[10][10] = {0};
 
-        if (snUser("Tauler generat. Vols fer trampes i veure el tauler generat? (S/N): ") == 'S') {
-            tablero_barcos(tablero_conBarcos, flota1, num_flota1);
-        }
+        int flota = elegir_flota();
 
-        if (snUser("Vols generar un nou tauler? (S/N): ") == 'N')
+        switch (flota)
         {
-            tablero_barcos(tablero_conBarcos, flota1, num_flota1);
+        case 1:
+            printf("Preparant tauler de la flota 1... \n");
 
-            comenzarPartida(tablero_conBarcos);
+            prepararPartida(tablero_conBarcos, flota1, num_flota1);
+
+                break;
+
+        default:
+            break;
         }
 
-        break;
-    
-    default:
-        break;
-    }
+        comenzarPartida(tablero_conBarcos);
 
- 
+            jugar = snUser("Vols jugar una nova partida? (S/N): ");
+    }
+    while (jugar == 'S')
+        ;
 }

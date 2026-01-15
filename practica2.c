@@ -1,17 +1,38 @@
+/*
+ * ======================================================================
+ * Enfonsar la flota
+ * ======================================================================
+ *
+ * Descripción: Este programa implementa un juego de hundir la flota
+ * donde el usuario elige una flota y juega contra un tablero generado
+ * aleatoriamente. Incluye funciones para colocar barcos, disparar y
+ * verificar victorias.
+ *
+ * Autor: Santiago Lozada Benitez
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
 
-// Estructura del barco para almacenar su informacion
+/*
+ * ======================================================================
+ * ESTRUCTURAS Y CONSTANTES GLOBALES
+ * ======================================================================
+ */
+
+/**
+ * @brief Estructura que representa un barco en la flota.
+ */
 struct barco
 {
-    char nombre[20];
-    int cantidad;
-    int casillas;
+    char nombre[20]; //Nombre del barco
+    int cantidad;    //Número de mismo tipo de barco
+    int casillas;    //Longitud del barco
 };
 
-// Flotas
+// Flotas predefinidas
 struct barco flota1[] = {
     {"portaavions", 1, 5},
     {"cuirassat", 1, 4},
@@ -32,12 +53,22 @@ struct barco flota3[] =
         {"fragates", 3, 2},
         {"submarins", 4, 1}};
 
-// Variable globales del tamaño de las flotas
+// tamaños de las flotas
 int num_flota1 = sizeof(flota1) / sizeof(flota1[0]);
 int num_flota2 = sizeof(flota2) / sizeof(flota2[0]);
 int num_flota3 = sizeof(flota3) / sizeof(flota3[0]);
 
-// Funcion para printar el tablero 
+/*
+ * ======================================================================
+ * FUNCIONES DE UTILIDAD
+ * ======================================================================
+ */
+
+/**
+ * Imprime el tablero de la partida
+ *
+ * @param tablero Tablero general de la partida
+ */
 void printar_tablero(int tablero[10][10])
 {
     printf("   | A B C D E F G H I J\n --+---------------------\n");
@@ -53,20 +84,26 @@ void printar_tablero(int tablero[10][10])
     }
 }
 
-// Funcion para printar el tablero con los barcos ya colocados de forma random
+/**
+ * @brief Coloca los barcos de forma aleatoria en el tablero y lo imprime
+ *
+ * @param tablero_conBarcos Tablero con los barcos generados aleatoriamente
+ * @param flota Array de los barcos
+ * @param num_flota Numero de barcos de la array
+ */
+
 void tablero_barcos(int tablero_conBarcos[10][10], struct barco flota[], int num_barcos)
 {
     int id_barco = 1;
+
     for (int i = 0; i < num_barcos; i++)
     {
-        // printf("numeros barcos %d\n", num_barcos);
-        // printf("Barcos restantes %d\n", num_barcos - i);
         for (int j = 0; j < flota[i].cantidad; j++)
         {
-            // printf("nombre de barco: %s, cantidad total: %d, cantidad restante: %d\n", flota[i].nombre, flota[i].cantidad, flota[i].cantidad - j);
             int colocado = 0;
-            
-            while (!colocado) {
+
+            while (!colocado)
+            {
                 int fila = rand() % 10;
                 int columna = rand() % 10;
                 int orientacion = rand() % 2; // 0 = horizontal, 1 = vertical
@@ -74,25 +111,26 @@ void tablero_barcos(int tablero_conBarcos[10][10], struct barco flota[], int num
 
                 int fila_ini, fila_fin, col_ini, col_fin;
 
+                // horizontal
                 if (orientacion == 0)
-                { // horizontal
+                {
                     if (columna + flota[i].casillas > 10)
-                        {
-                            valido = 0;
-                        }
+                    {
+                        valido = 0;
+                    }
 
                     fila_ini = fila - 1;
                     fila_fin = fila + 1;
                     col_ini = columna - 1;
                     col_fin = columna + flota[i].casillas;
                 }
-                else
-                { // vertical
+                else // vertical
+                {
 
                     if (fila + flota[i].casillas > 10)
-                        {
-                            valido = 0;
-                        }
+                    {
+                        valido = 0;
+                    }
 
                     fila_ini = fila - 1;
                     fila_fin = fila + flota[i].casillas;
@@ -100,6 +138,7 @@ void tablero_barcos(int tablero_conBarcos[10][10], struct barco flota[], int num
                     col_fin = columna + 1;
                 }
 
+                // doble for para comprobar el alrededor de los barcos y evitar se sobrepongan
                 for (int r = fila_ini; r <= fila_fin && valido; r++)
                 {
                     for (int c = col_ini; c <= col_fin; c++)
@@ -119,17 +158,17 @@ void tablero_barcos(int tablero_conBarcos[10][10], struct barco flota[], int num
                 {
                     if (orientacion == 0)
                     {
-                        for (int k = 0; k < flota[i].casillas; k++) {
+                        for (int k = 0; k < flota[i].casillas; k++)
+                        {
                             tablero_conBarcos[fila][columna + k] = id_barco;
-                            // printf("barco %s, colocado, con id:%d\n", flota[i].nombre, id_barco);
                         }
                     }
                     else
                     {
-                        for (int k = 0; k < flota[i].casillas; k++) {
+                        for (int k = 0; k < flota[i].casillas; k++)
+                        {
                             tablero_conBarcos[fila + k][columna] = id_barco;
-                            // printf("barco %s, colocado, con id:%d\n", flota[i].nombre, id_barco);
-                        }                            
+                        }
                     }
                     colocado = 1;
                     id_barco++;
@@ -151,17 +190,27 @@ void tablero_barcos(int tablero_conBarcos[10][10], struct barco flota[], int num
     }
 }
 
-// Funcion para pedir numeros enteros al usuario
-int enteroUser(const char *mensaje, int min, int max) {
+/**
+ * @brief Solicita al usuario un número entero
+ *
+ * @param mensaje Texto a mostrar al usuario
+ * @param min Valor mínimo
+ * @param max Valor máximo
+ */
+
+int enteroUser(const char *mensaje, int min, int max)
+{
     int valor;
     int entradaUser;
 
-    do {
+    do
+    {
         printf("%s", mensaje);
         entradaUser = scanf("%d", &valor);
 
         // Limpiar buffer
-        while (getchar() != '\n');
+        while (getchar() != '\n')
+            ;
 
         if (entradaUser == 1 && valor >= min && valor <= max)
         {
@@ -172,27 +221,39 @@ int enteroUser(const char *mensaje, int min, int max) {
     } while (1);
 }
 
-// Funcion para pedir texto al usuario (SOLAMENTE PARA LETRAS, PALABRAS Y COORDENADAS)
-void coordenadasUser(int *fila, int *columna) {
+/**
+ * @brief Solicita coordenadas al usuario
+ * 
+ * @param fila Puntero a la fial
+ * @param columna Puntero a la columna
+ */
+
+void coordenadasUser(int *fila, int *columna)
+{
     char coordenadas[4];
     char letra;
     int numero;
 
-    while(1) {
+    while (1)
+    {
         printf("Introdueix coordenades (ex: A5): ");
         scanf("%3s", coordenadas);
-        while (getchar() != '\n');
+        while (getchar() != '\n')
+            ;
 
         letra = toupper(coordenadas[0]);
 
-        if (letra < 'A' || letra > 'J') {
+        if (letra < 'A' || letra > 'J')
+        {
             printf("Columna incorrecta (A-J)\n");
             continue;
         }
-        
+
+        // atoi convierte en char a int
         numero = atoi(&coordenadas[1]);
 
-        if (numero < 1 || numero > 10) {
+        if (numero < 1 || numero > 10)
+        {
             printf("Fila incorrecta (1-10)\n");
             continue;
         }
@@ -203,19 +264,28 @@ void coordenadasUser(int *fila, int *columna) {
     }
 }
 
-// Funcion para controlar las decisiones de SI o NO del usuario
-char snUser(const char *mensaje) {
+/**
+ * @brief Solicita al usuario una respuesta de S/N
+ * 
+ * @param mensaje Texto a mostrar al usuario
+ * @return 'S' o 'N'
+*/
+char snUser(const char *mensaje)
+{
     char c;
 
-    do {
+    do
+    {
         printf("%s", mensaje);
         scanf(" %c", &c);
         // Limpiar buffer
-        while(getchar() != '\n');
+        while (getchar() != '\n')
+            ;
 
         c = toupper(c);
 
-        if (c == 'S' || c == 'N') {
+        if (c == 'S' || c == 'N')
+        {
             return c;
         }
 
@@ -223,7 +293,12 @@ char snUser(const char *mensaje) {
     } while (1);
 }
 
-// Funcion para elegir flota
+/**
+ * @brief Menu para escoger la flota con la que el usuario desea jugar
+ * 
+ * @return Número del 1 al 3 para elegir flota
+ */
+
 int elegir_flota()
 {
     printf("┌──────────────────────────────────┐\n");
@@ -236,6 +311,15 @@ int elegir_flota()
 
     return enteroUser("Introdueix el número de la flota (1-3): ", 1, 3);
 }
+
+/**
+ * @brief Comprovacion si un barco esta hundido
+ *
+ * @param id_barco ID del barco en partida
+ * @param tablero Tablero general de la partida
+ * @param tablero_conBarcos Tablero con los barcos generados aleatoriamente
+ * @return 1 si esta hundido, 0 si no
+ */
 
 int barcoHundido(int id_barco, int tablero[10][10], int tablero_conBarcos[10][10])
 {
@@ -254,20 +338,32 @@ int barcoHundido(int id_barco, int tablero[10][10], int tablero_conBarcos[10][10
     return 1;
 }
 
-int marcarAgua(int id_barco, int tablero[10][10], int tablero_conBarcos[10][10]) {
+/**
+ * @brief Marca el agua de alrededor del barco hundido
+ *
+ * @param id_barco ID del barco en partida
+ * @param tablero Tablero general de la partida
+ * @param tablero_conBarcos Tablero con los barcos generados aleatoriamente
+ */
+
+int marcarAgua(int id_barco, int tablero[10][10], int tablero_conBarcos[10][10])
+{
     for (int i = 0; i < 10; i++)
     {
         for (int j = 0; j < 10; j++)
         {
             // Comprovacion de las casillas del barco hundido
-            if (tablero_conBarcos[i][j] == id_barco) {
+            if (tablero_conBarcos[i][j] == id_barco)
+            {
                 // doble for para recorrer el perimetro del barco
                 for (int x = i - 1; x <= i + 1; x++)
                 {
                     for (int z = j - 1; z <= j + 1; z++)
                     {
-                        if (x >= 0 && x < 10 && z >= 0 && z < 10) {
-                            if (tablero[x][z] == 0 && tablero_conBarcos[x][z] == 0) {
+                        if (x >= 0 && x < 10 && z >= 0 && z < 10)
+                        {
+                            if (tablero[x][z] == 0 && tablero_conBarcos[x][z] == 0)
+                            {
                                 tablero[x][z] = 2;
                             }
                         }
@@ -278,22 +374,35 @@ int marcarAgua(int id_barco, int tablero[10][10], int tablero_conBarcos[10][10])
     }
 }
 
-int disparoBarco(int fila, int columna, int tablero[10][10], int tablero_conBarcos[10][10]) {
-    if (tablero[fila][columna] != 0) {
-        printf("Ja has disparat aqui\n");
+/**
+ * @brief Controla el disparo a la partida
+ *
+ * @param fila Fila del tablero
+ * @param columna Columna del tablero
+ * @param tablero Tablero general de la partida
+ * @param tablero_conBarcos Tablero con los barcos generados aleatoriamente
+ * @return 1 si ha tocado al barco, 0 agua o disparo repetido
+ */
+
+int disparoBarco(int fila, int columna, int tablero[10][10], int tablero_conBarcos[10][10])
+{
+    if (tablero[fila][columna] != 0)
+    {
+        printf(" ⚠  Ja has disparat aqui\n");
         return 0;
     }
 
     int id_barco = tablero_conBarcos[fila][columna];
 
-        // Hay barco, si id > 0
+    // Hay barco, si id > 0
     if (id_barco > 0)
     {
-        printf("TOCAT!\n");
+        printf(" ➜  TOCAT!\n");
         tablero[fila][columna] = 1;
 
-        if (barcoHundido(id_barco, tablero, tablero_conBarcos)) {
-            printf("VAIXELL ENFONSAT\n");
+        if (barcoHundido(id_barco, tablero, tablero_conBarcos))
+        {
+            printf(" ☠  VAIXELL ENFONSAT\n");
             marcarAgua(id_barco, tablero, tablero_conBarcos);
         }
 
@@ -301,49 +410,57 @@ int disparoBarco(int fila, int columna, int tablero[10][10], int tablero_conBarc
     }
     else
     {
-        printf("Aigua\n");
+        printf(" ✖  AIGUA\n");
         tablero[fila][columna] = 2;
         return 0;
     }
 }
 
-int barcos_restantes(int tablero[10][10], int tablero_conBarcos[10][10]) {
+/**
+ * @brief Verifica si quedan barcos vivo en la partida
+ *
+ * @param tablero Tablero general de la partida
+ * @param tablero_conBarcos Tablero con los barcos generados aleatoriamente
+ */
+
+int barcos_restantes(int tablero[10][10], int tablero_conBarcos[10][10])
+{
     for (int i = 0; i < 10; i++)
     {
         for (int j = 0; j < 10; j++)
         {
-            if (tablero_conBarcos[i][j] > 0 && tablero[i][j] != 1) {
+            if (tablero_conBarcos[i][j] > 0 && tablero[i][j] != 1)
+            {
                 // Quedan barcos restantes
-                return 1; 
+                return 1;
             }
         }
-        
     }
     // No quedan barcos
     return 0;
 }
 
-// Funcion para comenzar la partida
-void comenzarPartida(int tablero_conBarcos[10][10]) {
-    printf("Comença la partida...\n");
+/**
+ * @brief Inicia y controla el comenzamiento de la partida más el bucle del juego
+ *
+ * @param tablero_conBarcos Tablero con los barcos generados aleatoriamente
+ */
 
-    // Doble for para limpiar la tabla
+void comenzarPartida(int tablero_conBarcos[10][10])
+{
+    printf("\n╔══════════════════════════════════════╗\n");
+    printf("║     ⚓  COMENÇA LA PARTIDA  ⚓       ║\n");
+    printf("╚══════════════════════════════════════╝\n\n");
+
     int tablero[10][10] = {0};
-
-    // for (int i = 0; i < 10; i++)
-    // {
-    //     for (int j = 0; j < 10; j++)
-    //     {
-    //         tablero[i][j] = 0;
-    //     }
-    // }
 
     int fila, columna;
     int contador = 0;
 
-    while (1) {
+    while (1)
+    {
         printar_tablero(tablero);
-        
+
         coordenadasUser(&fila, &columna);
 
         disparoBarco(fila, columna, tablero, tablero_conBarcos);
@@ -351,19 +468,33 @@ void comenzarPartida(int tablero_conBarcos[10][10]) {
         if (!barcos_restantes(tablero, tablero_conBarcos))
         {
             printar_tablero(tablero);
-            printf("Felicitats! Has enfonsat tota la flota en %d tirades!", contador);
+            printf("\n╔══════════════════════════════════════╗\n");
+            printf("║        🎉  VICTÒRIA TOTAL  🎉        ║\n");
+            printf("╠══════════════════════════════════════╣\n");
+            printf("║  Has enfonsat tota la flota!         ║\n");
+            printf("║  Tirades totals: %2d                 ║\n", contador);
+            printf("╚══════════════════════════════════════╝\n\n");
             return;
         }
         contador++;
     }
 }
 
+/**
+ * @brief Prepara la partida llamando a las diferentes funciones para generar los tableros y poder iniciar sin problemas
+ * 
+ * @param tablero_conBarcos Tablero con los barcos generados aleatoriamente
+ * @param flota Array de los barcos
+ * @param num_flota Numero de barcos de la array
+ */
+
 void prepararPartida(int tablero_conBarcos[10][10], struct barco flota[], int num_flota)
 {
 
     char repetir;
 
-    do {
+    do
+    {
         // Doble for para limpiar la tabla de barcos
         for (int x = 0; x < 10; x++)
         {
@@ -373,25 +504,45 @@ void prepararPartida(int tablero_conBarcos[10][10], struct barco flota[], int nu
             }
         }
 
-        // tablero_barcos(tablero_barcos, flota, num_flota);
-
-        if (snUser("Tauler generat. Vols fer trampes i veure el tauler generat? (S/N): ") == 'S') {
+        if (snUser("Tauler generat. Vols fer trampes i veure el tauler generat? (S/N): ") == 'S')
+        {
+            printf("👁  Mode trampes activat\n\n");
             tablero_barcos(tablero_conBarcos, flota, num_flota);
         }
 
         repetir = snUser("Vols generar un nou tauler? (S/N): ");
 
-    } while(repetir == 'S');
+    } while (repetir == 'S');
+
+    printf("\nGràcies per jugar a ⚓ Enfonsar la Flota ⚓\n");
+    printf("Fins la pròxima capitana / capità!\n");
 }
 
-    int
-    main(void)
+/*
+ * ======================================================================
+ * FUNCIÓN PRINCIPAL
+ * ======================================================================
+ */
+
+/**
+ * @brief Entrada del programa
+ * 
+ * Gestion principal del juego y el bucle de las partidas
+ */
+
+int main(void)
 {
     srand(time(NULL));
 
+    printf("╔════════════════════════════════════╗\n");
+    printf("║        ⚓  ENFONSAR LA FLOTA  ⚓   ║\n");
+    printf("╠════════════════════════════════════╣\n");
+    printf("║        Joc de guerra naval         ║\n");
+    printf("╚════════════════════════════════════╝\n\n");
+
     char jugar;
 
-        do
+    do
     {
         int tablero_conBarcos[10][10] = {0};
 
@@ -400,16 +551,18 @@ void prepararPartida(int tablero_conBarcos[10][10], struct barco flota[], int nu
         switch (flota)
         {
         case 1:
-            printf("Preparant tauler de la flota 1... \n");
+            printf("\n⚙  Preparant tauler de la flota 1...\n");
+            printf("\n══════════════════════════════════════\n");
 
             prepararPartida(tablero_conBarcos, flota1, num_flota1);
 
-                break;
+            break;
 
         case 2:
             printf("Preparant tauler de la flota 2... \n");
 
             prepararPartida(tablero_conBarcos, flota2, num_flota2);
+            printf("\n══════════════════════════════════════\n");
 
             break;
 
@@ -417,6 +570,7 @@ void prepararPartida(int tablero_conBarcos[10][10], struct barco flota[], int nu
             printf("Preparant tauler de la flota 3... \n");
 
             prepararPartida(tablero_conBarcos, flota3, num_flota3);
+            printf("\n══════════════════════════════════════\n");
 
             break;
         default:
@@ -425,8 +579,6 @@ void prepararPartida(int tablero_conBarcos[10][10], struct barco flota[], int nu
 
         comenzarPartida(tablero_conBarcos);
 
-            jugar = snUser("Vols jugar una nova partida? (S/N): ");
-    }
-    while (jugar == 'S')
-        ;
+        jugar = snUser("Vols jugar una nova partida? (S/N): ");
+    } while (jugar == 'S');
 }

@@ -65,10 +65,11 @@ int num_flota3 = sizeof(flota3) / sizeof(flota3[0]);
  */
 
 /**
- * Imprime el tablero de la partida
+ * @brief Imprime el tablero de la partida
  *
  * @param tablero Tablero general de la partida
  */
+
 void printar_tablero(int tablero[10][10])
 {
     printf("   | A B C D E F G H I J\n --+---------------------\n");
@@ -79,6 +80,27 @@ void printar_tablero(int tablero[10][10])
         for (int j = 0; j < 10; j++)
         {
             printf("%d ", tablero[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+/**
+ * @brief Imprime el tablero de barcos de la partida
+ *
+ * @param tablero_conBarcos Tablero con los barcos generados aleatoriamente
+ */
+
+void printar_tablero_barcos(int tablero_conBarcos[10][10])
+{
+    printf("   | A B C D E F G H I J\n --+---------------------\n");
+
+    for (int i = 0; i < 10; i++)
+    {
+        printf("%2d | ", i + 1);
+        for (int j = 0; j < 10; j++)
+        {
+            printf("%d ", tablero_conBarcos[i][j]);
         }
         printf("\n");
     }
@@ -176,18 +198,6 @@ void tablero_barcos(int tablero_conBarcos[10][10], struct barco flota[], int num
             }
         }
     }
-
-    printf("   | A B C D E F G H I J\n --+---------------------\n");
-
-    for (int i = 0; i < 10; i++)
-    {
-        printf("%2d | ", i + 1);
-        for (int j = 0; j < 10; j++)
-        {
-            printf("%d ", tablero_conBarcos[i][j]);
-        }
-        printf("\n");
-    }
 }
 
 /**
@@ -236,7 +246,7 @@ void coordenadasUser(int *fila, int *columna)
 
     while (1)
     {
-        printf("Introdueix coordenades (ex: A5): ");
+        printf("\nIntrodueix coordenades (ex: A5): ");
         scanf("%3s", coordenadas);
         while (getchar() != '\n')
             ;
@@ -472,7 +482,7 @@ void comenzarPartida(int tablero_conBarcos[10][10])
             printf("║        🎉  VICTÒRIA TOTAL  🎉        ║\n");
             printf("╠══════════════════════════════════════╣\n");
             printf("║  Has enfonsat tota la flota!         ║\n");
-            printf("║  Tirades totals: %2d                 ║\n", contador);
+            printf("║  Tirades totals: %2d                  ║\n", contador);
             printf("╚══════════════════════════════════════╝\n\n");
             return;
         }
@@ -504,18 +514,17 @@ void prepararPartida(int tablero_conBarcos[10][10], struct barco flota[], int nu
             }
         }
 
-        if (snUser("Tauler generat. Vols fer trampes i veure el tauler generat? (S/N): ") == 'S')
+        tablero_barcos(tablero_conBarcos, flota, num_flota);
+
+        if (snUser("\nTauler generat. Vols fer trampes i veure el tauler generat? (S/N): ") == 'S')
         {
-            printf("👁  Mode trampes activat\n\n");
-            tablero_barcos(tablero_conBarcos, flota, num_flota);
+            printf("\n👁  Mode trampes activat\n\n");
+            printar_tablero_barcos(tablero_conBarcos);
         }
 
-        repetir = snUser("Vols generar un nou tauler? (S/N): ");
+        repetir = snUser("\nVols generar un nou tauler? (S/N): ");
 
     } while (repetir == 'S');
-
-    printf("\nGràcies per jugar a ⚓ Enfonsar la Flota ⚓\n");
-    printf("Fins la pròxima capitana / capità!\n");
 }
 
 /*
@@ -552,25 +561,22 @@ int main(void)
         {
         case 1:
             printf("\n⚙  Preparant tauler de la flota 1...\n");
-            printf("\n══════════════════════════════════════\n");
 
             prepararPartida(tablero_conBarcos, flota1, num_flota1);
 
             break;
 
         case 2:
-            printf("Preparant tauler de la flota 2... \n");
+            printf("\n⚙  Preparant tauler de la flota 2... \n");
 
             prepararPartida(tablero_conBarcos, flota2, num_flota2);
-            printf("\n══════════════════════════════════════\n");
 
             break;
 
         case 3:
-            printf("Preparant tauler de la flota 3... \n");
+            printf("\n⚙  Preparant tauler de la flota 3... \n");
 
             prepararPartida(tablero_conBarcos, flota3, num_flota3);
-            printf("\n══════════════════════════════════════\n");
 
             break;
         default:
@@ -581,4 +587,7 @@ int main(void)
 
         jugar = snUser("Vols jugar una nova partida? (S/N): ");
     } while (jugar == 'S');
+
+    printf("\nGràcies per jugar a ⚓ Enfonsar la Flota ⚓\n");
+    printf("Fins la pròxima capitana / capità!\n");
 }
